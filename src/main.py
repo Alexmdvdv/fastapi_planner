@@ -30,9 +30,14 @@ def cities_list(q: str = Query(description="Название города", defa
     """
     Получение списка городов
     """
-    cities = Session().query(City).all()
+    query = Session().query(City)
+    if q is not None:
+        query = query.filter(City.name == q)
 
-    return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in cities]
+    else:
+        query = query.all()
+
+    return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in query]
 
 
 @app.post('/users-list/', summary='')
@@ -104,10 +109,9 @@ def picnic_add(city_id: int = None, datetime: dt.datetime = None):
 
 
 @app.get('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
-def register_to_picnic(*_, **__,):
+def register_to_picnic(*_, **__, ):
     """
     Регистрация пользователя на пикник
     (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
     """
     return ...
-
