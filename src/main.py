@@ -115,10 +115,29 @@ def picnic_add(city_id: int = None, datetime: dt.datetime = None):
     }
 
 
-@app.get('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
-def register_to_picnic(*_, **__, ):
+@app.post('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
+def register_to_picnic(user_id, picnic_id):
     """
     Регистрация пользователя на пикник
     (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
     """
-    return ...
+
+    user_query = Session().query(User).filter(User.id == user_id).first()
+    if user_query is None:
+        raise HTTPException(status_code=400, detail="Пользователь не найден")
+
+    picnic_query = Session().query(Picnic).filter(Picnic.id == picnic_id).first()
+    if picnic_query is None:
+        raise HTTPException(status_code=400, detail="Пикник не найден")
+
+    registration_query = PicnicRegistration(user_id=user_id, picnic_id=picnic_id)
+
+    session = Session()
+    session.add(registration_query)
+    session.commit()
+
+    return [{
+        'id': user_query.id,
+        'name': user_query.name,
+        'time': picnic_query.time,
+    }]
