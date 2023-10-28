@@ -44,6 +44,6 @@ class PicnicUser(BaseModel):
 
 class PicnicData(BaseModel):
     id: int = Field(description="id пикника")
-    city: str = Field(description="Город")
+    name: str = Field(description="Город")
     time: datetime = Field(description="Время пикника")
     users: List[PicnicUser] = Field(description="Пользователь")
