@@ -57,7 +57,6 @@ class GetWeatherRequest:
             Текущая температура
         """
         data = response.json()
-        print(data)
         return data['main']['temp']
 
     def get_weather(self, city):
