@@ -1,7 +1,9 @@
 from typing import List
 from database import Session
-from fastapi import Query
+from fastapi import Query, Depends
 from fastapi import APIRouter
+
+from dependencies import get_db
 from models import User
 from user.schemas import RegisterUserRequest, UserModel, UserResponse
 
@@ -10,8 +12,8 @@ router = APIRouter()
 
 @router.get('/info/', response_model=List[UserResponse], description="Список пользователей")
 def get_users(max_age: int = Query(default=None, description="Младше"),
-              min_age: int = Query(default=None, description="Старше")):
-    query = Session().query(User)
+              min_age: int = Query(default=None, description="Старше"), db: Session = Depends(get_db)):
+    query = db.query(User)
 
     if max_age is not None:
         users = query.filter(User.age <= max_age)
@@ -30,9 +32,9 @@ def get_users(max_age: int = Query(default=None, description="Младше"),
 
 
 @router.post('/register/', response_model=List[UserModel], description="Регистрация пользователя")
-def register_user(user: RegisterUserRequest):
+def register_user(user: RegisterUserRequest, db: Session = Depends(get_db)):
     user_object = User(**user.dict())
-    session = Session()
+    session = db
     session.add(user_object)
     session.commit()
 
