@@ -1,10 +1,11 @@
-import requests
+import urllib.parse
 
+import requests
 
 WEATHER_API_KEY = '99ba78ee79a2a24bc507362c5288a81b'
 
 
-class GetWeatherRequest():
+class GetWeatherRequest:
     """
     Выполняет запрос на получение текущей погоды для города
     """
@@ -15,18 +16,22 @@ class GetWeatherRequest():
         """
         self.session = requests.Session()
 
-    def get_weather_url(self, city):
+    @staticmethod
+    def get_weather_url(city):
         """
         Генерирует url включая в него необходимые параметры
         Args:
             city: Город
         Returns:
-
+            url: Сформированный URL для запроса
         """
-        url = 'https://api.openweathermap.org/data/2.5/weather'
-        url += '?units=metric'
-        url += '&q=' + city
-        url += '&appid=' + WEATHER_API_KEY
+        base_url = 'https://api.openweathermap.org/data/2.5/weather'
+        params = {
+            'units': 'metric',
+            'q': city,
+            'appid': WEATHER_API_KEY
+        }
+        url = f'{base_url}?{urllib.parse.urlencode(params)}'
         return url
 
     def send_request(self, url):
@@ -35,22 +40,24 @@ class GetWeatherRequest():
         Args:
             url: Адрес запроса
         Returns:
-
+             response: Ответ от сервера
         """
-        r = self.session.get(url)
-        if r.status_code != 200:
-            r.raise_for_status()
-        return r
+        response = self.session.get(url)
+        if response.status_code == 200:
+            return response
+        return None
 
-    def get_weather_from_response(self, response):
+    @staticmethod
+    def get_weather_from_response(response):
         """
         Достает погоду из ответа
         Args:
             response: Ответ, пришедший с сервера
         Returns:
-
+            Текущая температура
         """
         data = response.json()
+        print(data)
         return data['main']['temp']
 
     def get_weather(self, city):
@@ -59,52 +66,13 @@ class GetWeatherRequest():
         Args:
             city: Город
         Returns:
-
+            Текущая температура
         """
         url = self.get_weather_url(city)
-        r = self.send_request(url)
-        if r is None:
-            return None
-        else:
-            weather = self.get_weather_from_response(r)
-            return weather
-
-
-class CheckCityExisting():
-    """
-    Проверка наличия города (запросом к серверу погоды)
-    """
-
-    def __init__(self):
-        """
-        Инициализирует класс
-        """
-        self.session = requests.Session()
-
-    def get_weather_url(self, city):
-        """
-        Генерирует url включая в него необходимые параметры
-        Args:
-            city: Город
-        Returns:
-
-        """
-        url = 'https://api.openweathermap.org/data/2.5/weather'
-        url += '?units=metric'
-        url += '&q=' + city
-        url += '&appid=' + WEATHER_API_KEY
-        return url
-
-    def send_request(self, url):
-        """
-        Отправляет запрос на сервер
-        Args:
-            url: Адрес запроса
-        Returns:
-
-        """
-        r = self.session.get(url)
-        return r
+        response = self.send_request(url)
+        if response is not None:
+            return self.get_weather_from_response(response)
+        return None
 
     def check_existing(self, city):
         """
@@ -112,11 +80,8 @@ class CheckCityExisting():
         Args:
             city: Название города
         Returns:
-
+            True, если город существует, иначе None
         """
         url = self.get_weather_url(city)
-        r = self.send_request(url)
-        if r.status_code == 404:
-            return False
-        if r.status_code == 200:
-            return True
+        response = self.send_request(url)
+        return response.status_code == 200

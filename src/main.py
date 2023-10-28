@@ -1,143 +1,17 @@
-import datetime as dt
-from fastapi import FastAPI, HTTPException, Query
-from database import engine, Session, Base, City, User, Picnic, PicnicRegistration
-from external_requests import CheckCityExisting, GetWeatherRequest
-from models import RegisterUserRequest, UserModel
+from fastapi import FastAPI
+from operation.router import router as router_operation
+from user.router import router as router_user
 
 app = FastAPI()
 
+app.include_router(
+    router_operation,
+    prefix='/picnic',
+    tags=['Operation']
+)
 
-@app.get('/create-city/', summary='Create City', description='Создание города по его названию')
-def create_city(city: str = Query(description="Название города", default=None)):
-    if city is None:
-        raise HTTPException(status_code=400, detail='Параметр city должен быть указан')
-    check = CheckCityExisting()
-    if not check.check_existing(city):
-        raise HTTPException(status_code=400, detail='Параметр city должен быть существующим городом')
-
-    city_object = Session().query(City).filter(City.name == city.capitalize()).first()
-    if city_object is None:
-        city_object = City(name=city.capitalize())
-        s = Session()
-        s.add(city_object)
-        s.commit()
-
-    return {'id': city_object.id, 'name': city_object.name, 'weather': city_object.weather}
-
-
-@app.post('/get-cities/', summary='Get Cities')
-def cities_list(q: str = Query(description="Название города", default=None)):
-    """
-    Получение списка городов
-    """
-    query = Session().query(City)
-    if q is not None:
-        query = query.filter(City.name == q)
-
-    else:
-        query = query.all()
-
-    return [{'id': city.id, 'name': city.name, 'weather': city.weather} for city in query]
-
-
-@app.post('/users-list/', summary='')
-def users_list(max_age: int = Query(default=None, description="Младше"),
-               min_age: int = Query(default=None, description="Старше")):
-    session = Session().query(User)
-
-    if max_age is not None:
-        users = session.filter(User.age <= max_age)
-
-    elif min_age is not None:
-        users = session.filter(User.age >= min_age)
-
-    else:
-        users = session.all()
-    return [{
-        'id': user.id,
-        'name': user.name,
-        'surname': user.surname,
-        'age': user.age,
-    } for user in users]
-
-
-@app.post('/register-user/', summary='CreateUser', response_model=UserModel)
-def register_user(user: RegisterUserRequest):
-    """
-    Регистрация пользователя
-    """
-    user_object = User(**user.dict())
-    s = Session()
-    s.add(user_object)
-    s.commit()
-
-    return UserModel.from_orm(user_object)
-
-
-@app.get('/all-picnics/', summary='All Picnics', tags=['picnic'])
-def all_picnics(datetime: dt.datetime = Query(default=None, description='Время пикника (по умолчанию не задано)'),
-                past: bool = Query(default=True, description='Включая уже прошедшие пикники')):
-    """
-    Список всех пикников
-    """
-    picnics = Session().query(Picnic)
-    if datetime is not None:
-        picnics = picnics.filter(Picnic.time == datetime)
-    if not past:
-        picnics = picnics.filter(Picnic.time >= dt.datetime.now())
-
-    return [{
-        'id': pic.id,
-        'city': Session().query(City).filter(City.id == pic.id).first().name,
-        'time': pic.time,
-        'users': [
-            {
-                'id': pr.user.id,
-                'name': pr.user.name,
-                'surname': pr.user.surname,
-                'age': pr.user.age,
-            }
-            for pr in Session().query(PicnicRegistration).filter(PicnicRegistration.picnic_id == pic.id)],
-    } for pic in picnics]
-
-
-@app.post('/picnic-add/', summary='Picnic Add', tags=['picnic'])
-def picnic_add(city_id: int = None, datetime: dt.datetime = None):
-    p = Picnic(city_id=city_id, time=datetime)
-    s = Session()
-    s.add(p)
-    s.commit()
-
-    return {
-        'id': p.id,
-        'city': Session().query(City).filter(City.id == p.id).first().name,
-        'time': p.time,
-    }
-
-
-@app.post('/picnic-register/', summary='Picnic Registration', tags=['picnic'])
-def register_to_picnic(user_id, picnic_id):
-    """
-    Регистрация пользователя на пикник
-    (Этот эндпойнт необходимо реализовать в процессе выполнения тестового задания)
-    """
-
-    user_query = Session().query(User).filter(User.id == user_id).first()
-    if user_query is None:
-        raise HTTPException(status_code=400, detail="Пользователь не найден")
-
-    picnic_query = Session().query(Picnic).filter(Picnic.id == picnic_id).first()
-    if picnic_query is None:
-        raise HTTPException(status_code=400, detail="Пикник не найден")
-
-    registration_query = PicnicRegistration(user_id=user_id, picnic_id=picnic_id)
-
-    session = Session()
-    session.add(registration_query)
-    session.commit()
-
-    return [{
-        'id': user_query.id,
-        'name': user_query.name,
-        'time': picnic_query.time,
-    }]
+app.include_router(
+    router_user,
+    prefix='/user',
+    tags=['User']
+)
