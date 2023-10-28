@@ -4,9 +4,10 @@ from fastapi import HTTPException, APIRouter, Query, Depends
 from database import Session
 from dependencies import get_db
 from external_requests import GetWeatherRequest
-from models import City, Picnic, PicnicRegistration, User
+from operation.models import City, Picnic, PicnicRegistration
 from operation.schemas import CityResponse, CityRequest, PicnicResponse, PicnicRequest, RegisterToPicnicResponse, \
     PicnicData, RegisterToPicnicRequest
+from user.models import User
 
 router = APIRouter()
 

@@ -4,7 +4,7 @@ from fastapi import Query, Depends
 from fastapi import APIRouter
 
 from dependencies import get_db
-from models import User
+from user.models import User
 from user.schemas import RegisterUserRequest, UserModel, UserResponse
 
 router = APIRouter()
