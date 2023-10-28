@@ -1,13 +1,13 @@
 import datetime as dt
 from typing import List
 from fastapi import HTTPException, APIRouter, Query, Depends
-from database import Session
-from dependencies import get_db
-from external_requests import GetWeatherRequest
-from operation.models import City, Picnic, PicnicRegistration
-from operation.schemas import CityResponse, CityRequest, PicnicResponse, PicnicRequest, RegisterToPicnicResponse, \
+from src.database import Session
+from src.dependencies import get_db
+from src.external_requests import GetWeatherRequest
+from src.operation.models import City, Picnic, PicnicRegistration
+from src.operation.schemas import CityResponse, CityRequest, PicnicResponse, PicnicRequest, RegisterToPicnicResponse, \
     PicnicData, RegisterToPicnicRequest
-from user.models import User
+from src.user.models import User
 
 router = APIRouter()
 

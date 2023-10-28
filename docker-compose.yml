@@ -6,7 +6,7 @@ services:
     depends_on:
       - postgres
     build:
-      context: Python-test
+      context: .
       target: backend
     environment:
       - DATABASE_HOST=postgres
@@ -14,26 +14,22 @@ services:
       - DATABASE_NAME=testcrt
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=password
-    command: "uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: "uvicorn src.main:app --host 0.0.0.0 --port 8000"
     ports:
-    - 8000:8000
+      - "8000:8000"
     networks:
       backend:
-
 
   postgres:
     restart: always
     image: postgres:13-alpine
     container_name: postgres
-    environment:
-      - POSTGRES_DB=testcrt
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       backend:
-
 
 volumes:
   postgres_data:

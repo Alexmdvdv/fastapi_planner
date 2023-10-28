@@ -1,5 +1,4 @@
 import urllib.parse
-
 import requests
 
 WEATHER_API_KEY = '99ba78ee79a2a24bc507362c5288a81b'

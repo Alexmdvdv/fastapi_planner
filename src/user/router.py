@@ -1,11 +1,11 @@
 from typing import List
-from database import Session
+from src.database import Session
 from fastapi import Query, Depends
 from fastapi import APIRouter
 
-from dependencies import get_db
-from user.models import User
-from user.schemas import RegisterUserRequest, UserModel, UserResponse
+from src.dependencies import get_db
+from src.user.models import User
+from src.user.schemas import RegisterUserRequest, UserModel, UserResponse
 
 router = APIRouter()
 

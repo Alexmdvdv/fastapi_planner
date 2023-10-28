@@ -1,4 +1,4 @@
-from database import Session
+from src.database import Session
 
 
 def get_db():
