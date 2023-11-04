@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from src.database import Base, engine
-from src.external_requests import GetWeatherRequest
+from src.utils import GetWeatherRequest
 from src.user.models import User
 
 

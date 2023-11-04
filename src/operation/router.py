@@ -3,7 +3,7 @@ from typing import List
 from fastapi import HTTPException, APIRouter, Query, Depends
 from src.database import Session
 from src.database import get_db
-from src.external_requests import GetWeatherRequest
+from src.utils import GetWeatherRequest
 from src.operation.models import City, Event, EventRegistration
 from src.operation.schemas import CityResponse, CityValidator, EventValidator, EventResponse, RegisterToEventResponse, \
     RegisterToEventValidator, EventData
