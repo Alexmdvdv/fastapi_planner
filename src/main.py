@@ -1,5 +1,4 @@
 import logging
-
 from fastapi import FastAPI
 from src.operation.router import router as router_operation
 from src.user.router import router as router_user
@@ -10,7 +9,7 @@ app = FastAPI()
 
 app.include_router(
     router_operation,
-    prefix='/picnic',
+    prefix='/event',
     tags=['Operation']
 )
 

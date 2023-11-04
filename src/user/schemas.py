@@ -1,24 +1,24 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UserResponse(BaseModel):
-    id: int = Field(description="id пользователя")
-    name: str = Field(description="Имя пользователя")
-    surname: str = Field(description="Фамилия пользователя")
-    age: int = Field(description="Возраст пользователя")
+    id: int
+    name: str
+    surname: str
+    age: int
 
 
 class RegisterUserRequest(BaseModel):
-    name: str = Field(description="Имя пользователя")
-    surname: str = Field(description="Фамилия пользователя")
-    age: int = Field(description="Возраст пользователя")
+    name: str
+    surname: str
+    age: int
 
 
 class UserModel(BaseModel):
-    id: int = Field(description="id пользователя")
-    name: str = Field(description="Имя пользователя")
-    surname: str = Field(description="Фамилия пользователя")
-    age: int = Field(description="Возраст пользователя")
+    id: int
+    name: str
+    surname: str
+    age: int
 
     class Config:
         orm_mode = True
