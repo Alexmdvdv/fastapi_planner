@@ -1,14 +1,15 @@
-from sqlalchemy.ext.declarative import declarative_base
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
+from db.base_class import Base
 from operation.utils import GetWeatherRequest
 
-Base = declarative_base()
+if TYPE_CHECKING:
+    from user.models import User  # To associate with the User model
 
 
 class City(Base):
-    __tablename__ = 'city'
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
 
@@ -24,8 +25,6 @@ class City(Base):
 
 
 class Event(Base):
-    __tablename__ = 'event'
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     city_id = Column(Integer, ForeignKey('city.id'), nullable=False)
     time = Column(DateTime, nullable=False)
@@ -35,8 +34,6 @@ class Event(Base):
 
 
 class EventRegistration(Base):
-    __tablename__ = 'event_registration'
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     event_id = Column(Integer, ForeignKey('event.id'), nullable=False)
@@ -46,15 +43,3 @@ class EventRegistration(Base):
 
     def __repr__(self):
         return f'<Регистрация {self.id}>'
-
-
-class User(Base):
-    __tablename__ = 'user'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    surname = Column(String, nullable=False)
-    age = Column(Integer, nullable=True)
-
-    def __repr__(self):
-        return f'<Пользователь {self.surname} {self.name}>'

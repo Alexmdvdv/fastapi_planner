@@ -2,9 +2,10 @@ import datetime as dt
 from typing import List
 from fastapi import HTTPException, APIRouter, Query, Depends
 from sqlalchemy.orm import Session
-from database import get_session
+from db.session import get_session
 from operation.utils import GetWeatherRequest
-from models import City, Event, EventRegistration, User
+from operation.models import City, Event, EventRegistration
+from user.models import User
 from operation.schemas import CityResponse, CityValidator, EventValidator, EventResponse, RegisterToEventResponse, \
     RegisterToEventValidator, EventData
 

@@ -2,8 +2,8 @@ from typing import List
 from fastapi import Query, Depends
 from fastapi import APIRouter
 from sqlalchemy.orm import Session
-from database import get_session
-from models import User
+from db.session import get_session
+from user.models import User
 from user.schemas import RegisterUserRequest, UserModel, UserResponse
 
 router = APIRouter()
