@@ -1,19 +1,18 @@
 import datetime as dt
 from typing import List
 from fastapi import HTTPException, APIRouter, Query, Depends
-from src.database import Session
-from src.database import get_db
-from src.utils import GetWeatherRequest
-from src.operation.models import City, Event, EventRegistration
-from src.operation.schemas import CityResponse, CityValidator, EventValidator, EventResponse, RegisterToEventResponse, \
+from sqlalchemy.orm import Session
+from database import get_session
+from operation.utils import GetWeatherRequest
+from models import City, Event, EventRegistration, User
+from operation.schemas import CityResponse, CityValidator, EventValidator, EventResponse, RegisterToEventResponse, \
     RegisterToEventValidator, EventData
-from src.user.models import User
 
 router = APIRouter()
 
 
 @router.get('/city/info/', response_model=List[CityResponse])
-def get_cities(city: str = Query(default=None), db: Session = Depends(get_db)):
+def get_cities(city: str = Query(default=None), db: Session = Depends(get_session)):
     query = db.query(City)
     if city is not None:
         query = query.filter(City.name == city)
@@ -30,7 +29,7 @@ def get_cities(city: str = Query(default=None), db: Session = Depends(get_db)):
 
 
 @router.post('/city/create/', response_model=List[CityResponse])
-def create_city(city: CityValidator, db: Session = Depends(get_db)):
+def create_city(city: CityValidator, db: Session = Depends(get_session)):
     if city.name is None:
         raise HTTPException(status_code=400, detail='Параметр city должен быть указан')
 
@@ -49,7 +48,7 @@ def create_city(city: CityValidator, db: Session = Depends(get_db)):
 
 
 @router.get('/info/', response_model=List[EventData])
-def get_events(datetime: dt.datetime = None, past: bool = True, db: Session = Depends(get_db)):
+def get_events(datetime: dt.datetime = None, past: bool = True, db: Session = Depends(get_session)):
     query = db.query(Event)
     if datetime is not None:
         query = query.filter(Event.time == datetime)
@@ -77,7 +76,7 @@ def get_events(datetime: dt.datetime = None, past: bool = True, db: Session = De
 
 
 @router.post('/create/', response_model=List[EventResponse])
-def create_event(request: EventValidator, db: Session = Depends(get_db)):
+def create_event(request: EventValidator, db: Session = Depends(get_session)):
     city_id = request.city_id
     datetime = request.time
 
@@ -101,7 +100,7 @@ def create_event(request: EventValidator, db: Session = Depends(get_db)):
 
 
 @router.post('/register/', response_model=List[RegisterToEventResponse])
-def register_to_event(request: RegisterToEventValidator, db: Session = Depends(get_db)):
+def register_to_event(request: RegisterToEventValidator, db: Session = Depends(get_session)):
     user_id = request.user_id
     event_id = request.event_id
 

@@ -1,8 +1,9 @@
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from src.database import Base, engine
-from src.utils import GetWeatherRequest
-from src.user.models import User
+from operation.utils import GetWeatherRequest
+
+Base = declarative_base()
 
 
 class City(Base):
@@ -40,11 +41,21 @@ class EventRegistration(Base):
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     event_id = Column(Integer, ForeignKey('event.id'), nullable=False)
 
-    user = relationship(User, backref='events')
-    event = relationship(Event, backref='users')
+    user = relationship("User", backref='events')
+    event = relationship("Event", backref='users')
 
     def __repr__(self):
         return f'<Регистрация {self.id}>'
 
 
-Base.metadata.create_all(bind=engine)
+class User(Base):
+    __tablename__ = 'user'
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    surname = Column(String, nullable=False)
+    age = Column(Integer, nullable=True)
+
+    def __repr__(self):
+        return f'<Пользователь {self.surname} {self.name}>'
