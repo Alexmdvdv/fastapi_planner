@@ -1,6 +1,5 @@
 alembic==1.12.1
 fastapi==0.63.0
-fastapi-users==12.1.2
 psycopg2-binary==2.9.9
 pydantic==1.8.1
 python-dotenv==1.0.0

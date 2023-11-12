@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from operation.router import router as router_operation
 from user.router import router as router_user
 
-logging.basicConfig(filename='../logging.log', level=logging.DEBUG,
+logging.basicConfig(filename='./logging.log', level=logging.DEBUG,
                     format='%(asctime)s [%(levelname)s] - %(message)s')
 app = FastAPI()
 

@@ -1,11 +1,12 @@
-FROM python:3.8-slim as backend
-
-RUN mkdir /code
+FROM python:3.9
 
 WORKDIR /code
 
-COPY requirements.txt .
+COPY ./requirements.txt /code/requirements.txt
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY . .
+
+RUN chmod a+x docker/*.sh
+
